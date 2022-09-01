@@ -9,7 +9,7 @@ import build_features as bf
 from constants import TO_DROP
 
 #Loading the data
-data = pd.read_csv('../../data/raw/All_Form_Entries.csv', dtype={'utm_content': 'object', 
+data = pd.read_csv('../data/raw/All_Form_Entries.csv', dtype={'utm_content': 'object', 
                                                               'current_download': 'object', 
                                                               'state': 'object', 'lead_type': 'object',
                                                               'lead_generation_app':'object'})
