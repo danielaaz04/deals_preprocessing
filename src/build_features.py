@@ -51,14 +51,6 @@ def clean_language(df,column):
     print(df[column].value_counts())
     return df
     
-def clean_utm_medium(df,column):
-    df[column] = df[column].replace(['schoolpage','coursereportschoolpage', 'schoolpage?utm_source=careerkarma',
-                                    'Blog','affiliate_email'], 'referral')
-    df[column] = df[column].replace(['23849575173750143','ppc','23849575173750143','Instagram_Feed','FB paid',
-                                    'Instagram_Stories','ML + AI','ML + AI v2 - 3rd time (Mar, lookalike NYC, NJ)'],
-                                    'cpc')
-    print(df[column].value_counts())
-    return df      
     
 def clean_utm_source(df,column):
     df[column] = df[column].replace('LInkedin', 'linkedin')
@@ -77,6 +69,19 @@ def clean_utm_source(df,column):
     print(df[column].value_counts())
     return df
 
+
+def clean_utm_medium(df,column):
+    df[column] = df[column].replace(['schoolpage','coursereportschoolpage', 'schoolpage?utm_source=careerkarma',
+                                    'Blog','affiliate_email'], 'referral')
+    df[column] = df[column].replace(['23849575173750143','ppc','Instagram_Feed','FB paid','Instagram_Stories',
+                                     'ML + AI','ML + AI v2 - 3rd time (Mar, lookalike NYC, NJ)'],
+                                    'cpc')
+    df[column] = df[column].replace('lead gen','social') 
+    df.loc[df['utm_source'] == 'landingjobs', column] = 'referral'
+    print(df[column].value_counts())
+    return df      
+    
+
 def assign_lead_type(df,column1,column2):
     df.loc[df[column1] == 'request_more_info', column2] = 'SOFT'
     df.loc[df[column1] == 'website-lead', column2] = 'STRONG'
@@ -92,23 +97,39 @@ def assign_lead_type(df,column1,column2):
     return df
 
 def assign_with_conditions(df):
-    df.loc[df['utm_source'] == 'landingjobs', 'utm_medium'] = 'referral'
-    df['utm_medium'] = np.where((df['utm_medium'] == 'Facebook_Mobile_Feed') & (df['has_gclid'] == '0') ,
-                              'social', df['utm_medium'])
+    df['utm_medium'] = np.where((df['utm_medium'] == 'Facebook_Mobile_Feed') & (df['has_gclid'] == '0'), 
+                                'organic', df['utm_medium'])
+    
     df['utm_medium'] = np.where((df['utm_medium'] == 'Facebook_Mobile_Feed') & (df['has_gclid'] == '1') , 
-                              'cpc', df['utm_medium'])
-    df['utm_medium'] = np.where((df['utm_medium'] == '23849757712110143') & (df['has_gclid'] == '0') , 
+                                'cpc', df['utm_medium'])
+    
+    df['utm_medium'] = np.where((df['utm_medium'] == 'Facebook_Marketplace') & (df['has_gclid'] == '0'), 
+                                'organic', df['utm_medium'])
+    
+    df['utm_medium'] = np.where((df['utm_medium'] == '23849757712110143') & (df['has_gclid'] == '0'), 
+                                'organic', df['utm_medium'])
+    
+    df['utm_medium'] = np.where((df['utm_medium'] == '23849757712110143') & (df['has_gclid'] == '1'), 
+                                'cpc', df['utm_medium'])
+     
+    df['utm_medium'] = np.where((df['utm_medium'] == 'Inmail') & (df['has_gclid'] == '0'), 
+                              'organic', df['utm_medium'])
+    
+    df['utm_medium'] = np.where((df['utm_medium'] == 'inscripcion') & (df['has_gclid'] == '0'), 
                               'social', df['utm_medium'])
-    df['utm_medium'] = np.where((df['utm_medium'] == '23849757712110143') & (df['has_gclid'] == '1') , 
-                              'cpc', df['utm_medium'])
-    df['utm_medium'] = np.where((df['utm_medium'] == 'Inmail') & (df['has_gclid'] == '0') , 
+    
+    df['utm_medium'] = np.where((df['utm_medium'] == 'event') & (df['has_gclid'] == '0'), 
                               'social', df['utm_medium'])
-    df['utm_medium'] = np.where((df['utm_medium'] == 'Facebook_Marketplace') & (df['has_gclid'] == '0') , 
-                              'social', df['utm_medium'])
-    df['utm_medium'] = np.where((df['utm_source'] == '4geeks') & (df['has_gclid'] == '0') , 
-                              'social', df['utm_medium'])
+    
+    df['utm_medium'] = np.where((df['utm_medium'] == 'lead gen') & (df['has_gclid'] == '0'), 
+                              'organic', df['utm_medium'])
+    
     df['utm_medium'] = np.where((df['utm_medium'] == 'rrss') & (df['has_gclid'] == '0') , 
-                              'social', df['utm_medium'])
+                              'organic', df['utm_medium'])
+    
+    df['utm_medium'] = np.where((df['utm_medium'] == 'rrss') & (df['has_gclid'] == '1') , 
+                              'cpc', df['utm_medium'])
+       
     print('Assignation with conditions ok')
     return df
   
